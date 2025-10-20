@@ -39,11 +39,6 @@ bateria_virtual/
 
 ⚙️ Instalação e execução
 
-Clone o repositório:
-
-git clone https://github.com/seu-usuario/bateria-virtual.git
-cd bateria-virtual
-
 
 Instale as dependências:
 
