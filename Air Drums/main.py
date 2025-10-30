@@ -5,7 +5,6 @@ import pygame
 import threading
 import time
 
-
 # Lista de círculos na ordem que devem ser tocados
 circulos = [
     {"pos": (781, 615), "raio": 50, "encostou": False,"som":"caixa"},
@@ -27,11 +26,9 @@ sons = {
     "surdo": pygame.mixer.Sound("sons/surdo.wav")
 }
 
-
 #funcão para tocar o som ja carregado
 def tocar(som):
     sons[som].play()
-  
 
 #define se a "baqueta" encostou no circulo
 def encostou_no_circulo(x_obj, y_obj, circulo):
@@ -41,8 +38,12 @@ def encostou_no_circulo(x_obj, y_obj, circulo):
     return distancia <= raio
 
 
-
 cap = cv2.VideoCapture(0)
+
+# aumenta a resolução para 1080p
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+print("Resolução atual:", cap.get(3), "x", cap.get(4))
 
 # Faixas de vermelho
 lower_red1 = np.array([0, 130, 120])
@@ -51,11 +52,13 @@ lower_red2 = np.array([170, 130, 120])
 upper_red2 = np.array([180, 255, 255])
 
 
-
 while True:
     ret, frame = cap.read()
     if not ret:
         break
+    
+    # Inverte horizontalmente 
+    frame = cv2.flip(frame, 1)
 
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
@@ -81,7 +84,7 @@ while True:
                         if not circulo["encostou"]:  # evita múltiplos prints para o mesmo círculo
                             tocar(circulo["som"])
                             circulo["encostou"] = True
-                            print("encostou")
+                            print(f"{circulo['som']}")
                     else:
                         circulo["encostou"] = False  # permite detectar novamente se o objeto sair e voltar
 
@@ -92,12 +95,11 @@ while True:
     cv2.circle(frame, (580, 335), 50, (0, 255, 0), 2) # -> prato
     cv2.circle(frame, (469, 535), 50, (0, 255, 0), 2) # -> surdo
 
-
-    
     cv2.imshow("Rastreamento dos baquetas", frame)
 
     if cv2.waitKey(1) & 0xFF == 27:
         break
+
 
 cap.release()
 cv2.destroyAllWindows()
